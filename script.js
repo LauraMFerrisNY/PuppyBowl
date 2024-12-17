@@ -1,6 +1,4 @@
-// Use the API_URL variable to make fetch requests to the API.
-// Replace the placeholder with your cohort name (ex: 2109-UNF-HY-WEB-PT)
-const cohortName = "YOUR COHORT NAME HERE";
+const cohortName = "2410-FTB-ET-WEB-PT";
 const API_URL = `https://fsa-puppy-bowl.herokuapp.com/api/${cohortName}`;
 
 /**
@@ -9,7 +7,10 @@ const API_URL = `https://fsa-puppy-bowl.herokuapp.com/api/${cohortName}`;
  */
 const fetchAllPlayers = async () => {
   try {
-    // TODO
+    const response = await fetch(`${API_URL}/players`);
+    const players = await response.json();
+    console.log(players.data);
+    return players.data;
   } catch (err) {
     console.error("Uh oh, trouble fetching players!", err);
   }
@@ -22,7 +23,10 @@ const fetchAllPlayers = async () => {
  */
 const fetchSinglePlayer = async (playerId) => {
   try {
-    // TODO
+    const response = await fetch(`${API_URL}/players/${playerId}`);
+    const player = await response.json();
+    console.log(player.data);
+    return player.data;
   } catch (err) {
     console.error(`Oh no, trouble fetching player #${playerId}!`, err);
   }
