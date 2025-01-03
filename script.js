@@ -2,7 +2,8 @@ const cohortName = "2410-FTB-ET-WEB-PT";
 const API_URL = `https://fsa-puppy-bowl.herokuapp.com/api/${cohortName}`;
 
 const state = {
-  players: []
+  players: [],
+  player: null
 };
 
 
@@ -46,6 +47,7 @@ const fetchSinglePlayer = async (playerId) => {
  * @returns {Object} the player returned by the API
  */
 const addNewPlayer = async (playerObj) => {
+  console.log("Adding a new Puppy");
   try {
     const response = await fetch(`${API_URL}/players`, {
       method: 'POST',
@@ -56,8 +58,6 @@ const addNewPlayer = async (playerObj) => {
 
     if (player.error) {
       throw new Error(player.error.message);
-    } else {
-      return player.data;
     }
   } catch (err) {
     console.error("Oops, something went wrong with adding that player!", err);
@@ -73,8 +73,8 @@ const removePlayer = async (playerId) => {
     await fetch(`${API_URL}/players/${playerId}`, {
       method: 'DELETE'
     });
-    await fetchAllPlayers();
-    await renderAllPlayers(state.players);
+    const players = await fetchAllPlayers();
+    renderAllPlayers(players);
   } catch (err) {
     console.error(`Whoops, trouble removing player #${playerId} from the roster!`, err);
   }
@@ -101,14 +101,6 @@ const removePlayer = async (playerId) => {
  */
 const renderAllPlayers = (playerList) => {
   try {
-    const header = document.querySelector("header");
-    const title = document.createElement("h1");
-    title.textContent = "Puppy Bowl";
-    header.replaceChildren(title);
-
-    document.querySelector("form").hidden = false;
-    renderNewPlayerForm();
-
     const main = document.querySelector("main");
     const playerContent = document.createElement("div");
 
@@ -231,7 +223,6 @@ const renderNewPlayerForm = () => {
       </label>
       <button>Submit</button>
     `;
-
     myForm.addEventListener("submit", async (event) => {
       event.preventDefault();
   
@@ -244,8 +235,8 @@ const renderNewPlayerForm = () => {
       };
   
       await addNewPlayer(player);
-      await fetchAllPlayers();
-      renderAllPlayers(state.players);
+      await renderMainPage();
+      myForm.reset();
   });
 
   } catch (err) {
@@ -253,10 +244,46 @@ const renderNewPlayerForm = () => {
   }
 };
 
+const renderMainPageHeading = () => {
+  const header = document.querySelector("header");
+    const title = document.createElement("h1");
+    title.textContent = `Puppy Bowl`;
+    header.replaceChildren(title);
+}
+
+const addButtonEventListeners = (players) => {
+  players.map((player) => {
+    document.getElementById(`${player.id}details`).addEventListener('click', async (event) => {
+      renderSinglePlayer(player);
+    });
+    document.getElementById(`${player.id}remove`).addEventListener('click', async (event) => {
+      removePlayer(player.id);
+    });
+  });
+  return;
+}
+
+const addButtonEventListener = () => {
+  document.getElementById("return").addEventListener('click', async (event) => {
+    renderMainPage(state.players);
+  });
+  return;
+}
+
+const renderMainPage = async () => {
+  await renderMainPageHeading();
+  document.querySelector("form").hidden = false;
+  const players = await fetchAllPlayers();
+  renderAllPlayers(players);
+};
+
 /**
  * Initializes the app by fetching all players and rendering them to the DOM.
  */
 const init = async () => {
+  await renderMainPageHeading();
+  document.querySelector("form").hidden = false;
+  await renderNewPlayerForm();
   const players = await fetchAllPlayers();
   renderAllPlayers(players);
 };
@@ -276,23 +303,4 @@ if (typeof window === "undefined") {
   };
 } else {
   init();
-}
-
-const addButtonEventListeners = (players) => {
-  players.map((player) => {
-    document.getElementById(`${player.id}details`).addEventListener('click', async (event) => {
-      renderSinglePlayer(player);
-    });
-    document.getElementById(`${player.id}remove`).addEventListener('click', async (event) => {
-      removePlayer(player.id);
-    });
-  });
-  return;
-}
-
-const addButtonEventListener = () => {
-  document.getElementById("return").addEventListener('click', async (event) => {
-    renderAllPlayers(state.players);
-  });
-  return;
 }
