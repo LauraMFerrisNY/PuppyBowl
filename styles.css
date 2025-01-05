@@ -3,3 +3,117 @@
   margin: 0;
   box-sizing: border-box;
 }
+
+body {
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  background-image: url("https://st2.depositphotos.com/2459687/5600/v/450/depositphotos_56005075-stock-illustration-animal-seamless-vector-pattern-of.jpg");
+}
+
+header {
+  background-color: #eace68;
+  padding: 1em;
+  color: #710e08;
+}
+
+form {
+  background-color: #eb910b;
+  padding: 1em;
+  color: #710e08;
+}
+
+h2 {
+  color: #eace68;
+  padding: .5em;
+  background-color: #5c4c34;
+}
+
+p {
+  color: #eace68;
+  padding: .5em;
+  width: 100%;
+  background-color: #5c4c34;
+}
+
+form > h3 {
+  margin-bottom: .5em;
+}
+
+.player_content {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.player_card {
+  margin: 1.5em;
+  padding: 1em;
+  border-style: solid;
+  border-color: #eb910b;
+  border-width: 2px;
+  border-radius: 1em;
+  background-color: #5c4c34;
+  width: 22em;
+  height: 30em;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  
+}
+
+.player_card > img {
+  max-height: 20em;
+  max-width: 20em;
+}
+
+.player_card_info {
+  border-top-style: dotted;
+  border-top-color: #eace68;
+  border-top-width: 2px;
+  color: #eace68;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.player_card_info > h3 {
+  margin: .5em;
+}
+.player_card_info > h4 {
+  margin: .5em;
+}
+
+.player_card_buttons {
+  margin: .5em;
+  display: inline-flex;
+  justify-content: space-around;
+}
+
+.single_player_content {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 1.5em;
+}
+
+.single_player_content > img {
+  max-height: 40em;
+  max-width: 40em;
+  margin: .5em;
+}
+
+.single_player_info {
+  margin: 1em;
+  padding: 1em;
+  border-style: solid;
+  border-color: #eb910b;
+  border-width: 2px;
+  border-radius: 1em;
+  background-color: #5c4c34;
+  color: #eace68;
+}
+
+.single_player_info > h3 {
+  margin: 1em;
+}
+.single_player_info > button {
+  margin: 1.5em;
+}
