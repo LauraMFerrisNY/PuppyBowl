@@ -34,12 +34,35 @@ const fetchSinglePlayer = async (playerId) => {
     const response = await fetch(`${API_URL}/players/${playerId}`);
     const player = await response.json();
     console.log(player.data);
-    const myPlayer = json.data["player"];
+    const myPlayer = player.data["player"];
     return myPlayer;
   } catch (err) {
     console.error(`Oh no, trouble fetching player #${playerId}!`, err);
   }
 };
+
+const fetchPlayerTeams = async () => {
+  try {
+    const response = await fetch(`${API_URL}/teams`);
+    const json = await response.json();
+    const myTeams = json.data["teams"];
+    return myTeams;
+  } catch (err) {
+    console.error(`Oh no, trouble fetching team #${teamId}!`, err);
+  }
+};
+
+const assignTeamName = async (teamId) => {
+  const playerTeams = await fetchPlayerTeams();
+  console.log(playerTeams);
+  let teamName = "";
+  playerTeams.map((team) => {
+    if(teamId === team.id) {
+      teamName = team.name;
+    }
+  });
+  return teamName;
+}
 
 /**
  * Adds a new player to the roster via the API.
@@ -103,24 +126,30 @@ const renderAllPlayers = (playerList) => {
   try {
     const main = document.querySelector("main");
     const playerContent = document.createElement("div");
+    playerContent.classList.add("player_content");
 
     const playersTitle = document.createElement("h2");
     playersTitle.textContent = "Current Players";
     main.replaceChildren(playersTitle);
 
     if (!playerList.length) {
-      playerContent.textContent = "The player list is empty";
+      const emptyMessage = document.createElement("p");
+      emptyMessage.textContent = "The player list is empty";
+      playerContent.replaceChildren(emptyMessage);
     } else {
       const allPlayers = playerList.map((player) => {
         const playerInfo = document.createElement("ul");
         playerInfo.innerHTML = `
         <div class="player_card">
-          <h3>${player.name}</h3>
-          <h4>Player Id: ${player.id}</h4>
           <img src="${player.imageUrl}" alt="${player.name}" />
-        
-          <button id="${player.id}details">See Details</button>
-          <button id="${player.id}remove">Remove Player</button>
+          <div class="player_card_info">
+            <h3>${player.name}</h3>
+            <h4>Player Id: ${player.id}</h4>
+            <div class="player_card_buttons">
+              <button id="${player.id}details">See Details</button>
+              <button id="${player.id}remove">Remove Player</button>
+          </div>
+          </div>
         </div>
         `;
         return playerInfo;
@@ -149,7 +178,7 @@ const renderAllPlayers = (playerList) => {
  * will call `renderAllPlayers` to re-render the full list of players.
  * @param {Object} player an object representing a single player
  */
-const renderSinglePlayer = (player) => {
+const renderSinglePlayer = async (player) => {
   try {
     const header = document.querySelector("header");
     const title = document.createElement("h1");
@@ -162,22 +191,24 @@ const renderSinglePlayer = (player) => {
     const playerContent = document.createElement("div");
 
     const playerInfo = document.createElement("ul");
+    playerInfo.classList.add("single_player_content");
     console.log(player);
 
     let teamAssignment = "";
     if (player.teamId != null) {
-      teamAssignment = player.teamId;
+      teamAssignment = await assignTeamName(player.teamId);
     } else {
       teamAssignment = "Unassigned";
     }
 
     playerInfo.innerHTML = `
-      <h3>Player Id: ${player.id}</h3>
-      <h3>Breed: ${player.breed}</h3>
       <img src="${player.imageUrl}" alt="${player.name}" />
-      <h3>Current Team: ${teamAssignment}</h3>
-    
-      <button id="return">Back to all players</button>
+      <div class="single_player_info">
+        <h3>Player Id: ${player.id}</h3>
+        <h3>Breed: ${player.breed}</h3>
+        <h3>Current Team: ${teamAssignment}</h3>
+        <button id="return">Back to all players</button>
+      </div>
     `;
     
     playerContent.replaceChildren(playerInfo);
@@ -200,7 +231,7 @@ const renderNewPlayerForm = () => {
     const myForm = document.getElementById('new-player-form');
 
     myForm.innerHTML = `
-      <h3>Add a new player: </h3>
+      <h3>Add a New Player: </h3>
       <label>
         Name: 
         <input type="text" name="playerName" />
@@ -218,7 +249,7 @@ const renderNewPlayerForm = () => {
         <input type="text" name="playerImage" />
       </label>
       <label>
-        Team: 
+        Team Id: 
         <input type="text" name="playerTeam" />
       </label>
       <button>Submit</button>
